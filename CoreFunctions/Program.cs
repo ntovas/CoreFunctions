@@ -16,12 +16,17 @@ namespace CoreFunctions
 	{
 		public static void Main(string[] args)
 		{
-			CreateWebHostBuilder(args).Build().Run();
+			var mgr = new FunctionManager();
+			CreateWebHostBuilder(args)
+				.ConfigureServices(services => services.AddSingleton(mgr))
+				.Build()
+				.Run();
 		}
 
 		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+
 			WebHost.CreateDefaultBuilder(args)
-				.UseStartup<Startup>()
-				.ConfigureServices(services => services.AddSingleton<FunctionManager>());
+				.UseStartup<Startup>();
+
 	}
 }

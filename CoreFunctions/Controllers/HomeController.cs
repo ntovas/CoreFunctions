@@ -11,11 +11,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace CoreFunctions.Controllers
 {
+
 	public class HomeController : Controller
 	{
+		private IHostingEnvironment _env;
+
+		public HomeController(IHostingEnvironment env)
+		{
+			_env = env;
+		}
 		public IActionResult Index()
 		{
 			return View();
@@ -29,7 +37,8 @@ namespace CoreFunctions.Controllers
 					typeof(HttpResponseWritingExtensions).GetTypeInfo().Assembly).
 				AddImports("CoreFunctions", "Microsoft.AspNetCore.Http");
 
-			var script = await System.IO.File.ReadAllTextAsync("");
+			var script = await System.IO.File
+				.ReadAllTextAsync($"{_env.ContentRootPath }/Scripts/{name}.csx");
 			var scriptCompiled =
 				CSharpScript.Create<Func<HttpContext, Func<Task>, Task>>(script, options);
 			var diag = scriptCompiled.Compile();

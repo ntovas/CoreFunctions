@@ -2,8 +2,10 @@
 {
 	if (context.Request.Path.ToString().Contains("pr0n"))
 	{
-		context.Response.Redirect("https://www.github.com/");
+		var response = context.Response;
+		response.Headers[HeaderNames.Location] = "http://www.github.com";
+		response.StatusCode = 301;
 		return;
 	}
-	await next.Invoke();
+	await next();
 }
