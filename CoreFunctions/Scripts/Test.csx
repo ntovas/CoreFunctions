@@ -2,9 +2,12 @@
 {
 	if (context.Request.Path.ToString().Contains("pr0n"))
 	{
+		var wc = new WebClient();
+		var str = await wc.DownloadStringTaskAsync(
+			new Uri("https://www.github.com"));
 		var response = context.Response;
-		response.Headers[HeaderNames.Location] = "http://www.github.com";
-		response.StatusCode = 301;
+		await response.WriteAsync(str);
+		response.StatusCode = 200;
 		return;
 	}
 	await next();

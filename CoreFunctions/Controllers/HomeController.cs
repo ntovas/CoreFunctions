@@ -35,7 +35,8 @@ namespace CoreFunctions.Controllers
 					GetType().GetTypeInfo().Assembly,
 					typeof(object).GetTypeInfo().Assembly,
 					typeof(HttpResponseWritingExtensions).GetTypeInfo().Assembly).
-				AddImports("CoreFunctions", "Microsoft.AspNetCore.Http");
+				AddImports("CoreFunctions", "Microsoft.AspNetCore.Http",
+					"System.Net", "System");
 
 			var script = await System.IO.File
 				.ReadAllTextAsync($"{_env.ContentRootPath }/Scripts/{name}.csx");

@@ -1,21 +1,24 @@
 ﻿using System;
-using CoreFunctions.Services;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CoreFunctions.Data.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
-namespace CoreFunctions
+namespace CoreFunctions.Admin
 {
 	public class Startup
 	{
-		private readonly FunctionManager _functionManager;
-		public Startup(IConfiguration configuration, FunctionManager functionManager)
+		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
-			_functionManager = functionManager;
 		}
 
 		public IConfiguration Configuration { get; }
@@ -29,24 +32,16 @@ namespace CoreFunctions
 				options.CheckConsentNeeded = context => true;
 				options.MinimumSameSitePolicy = SameSiteMode.None;
 			});
+			services.AddDbContext<CoreFunctionsDbContext>(options =>
+				options.UseSqlServer(
+					Configuration.GetConnectionString("DefaultConnection")));
 
-
-			services.AddMvc()
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
-			app.Use(async (context, next) =>
-			{
-				foreach (var function in _functionManager.Functions)
-				{
-					await function.Func(context, next);
-				}
-				await next();
-			});
-
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
